@@ -1,68 +1,54 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademik - Data Mahasiswa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Home</title>
 </head>
 
 <body>
 
-    <div class="container mt-5" style="max-width: 900px;">
-        <h1 class="mb-4">List Data Mahasiswa</h1>
-        <a href="create.php" class="btn btn-primary mb-3">Input Data Mahasiswa</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Akademik</a>
 
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">NIM</th>
-                    <th scope="col">Nama</th>
-                    <th scope="col">Tanggal Lahir</th>
-                    <th scope="col">Alamat</th>
-                    <th scope="col" style="width: 150px;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                // Pastikan file koneksi.php sudah tersedia dan berisi koneksi MySQLi
-                require 'koneksi.php';
+            <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                // Query untuk mengambil semua data dari tabel 'mahasiswa'
-                // Diasumsikan kolom Primary Key adalah 'nim'
-                $query = "SELECT nim, nama_mhs, tgl_lahir, alamat FROM mahasiswa ORDER BY nim ASC";
-                $hasil = $koneksi->query($query);
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="mahasiswa/index.php">Mahasiswa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="prodi/index.php">Prodi</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-                if ($hasil->num_rows > 0) {
-                    while ($row = $hasil->fetch_assoc()) {
-                ?>
-                        <tr>
-                            <th scope="row"><?= htmlspecialchars($row['nim']) ?></th>
-                            <td><?= htmlspecialchars($row['nama_mhs']) ?></td>
-                            <td><?= htmlspecialchars($row['tgl_lahir']) ?></td>
-                            <td><?= htmlspecialchars($row['alamat']) ?></td>
-                            <td>
-                                <a href="edit.php?nim=<?= urlencode($row['nim']) ?>" class="btn btn-warning btn-sm">Edit</a>
+    <div class="container mt-4 justify-content-center text-center">
+        <h1>Welcome to the Akademik System</h1>
+        <p>This is the home page.</p>
 
-                                <a href="delete.php?nim=<?= urlencode($row['nim']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa dengan NIM: <?= $row['nim'] ?>?')">Hapus</a>
-                            </td>
-                        </tr>
-                <?php
-                    }
-                } else {
-                    // Tampilkan pesan jika tidak ada data
-                    echo '<tr><td colspan="5" class="text-center">Tidak ada data mahasiswa.</td></tr>';
-                }
+        <!-- Bootstrap 5 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
-                // Tutup koneksi (opsional, tapi disarankan)
-                $koneksi->close();
-                ?>
-            </tbody>
-        </table>
-
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
 </html>
