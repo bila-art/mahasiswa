@@ -1,7 +1,14 @@
 <?php
+session_start();
+
+// 1. Proteksi: Pastikan hanya user yang login yang bisa menjalankan proses database
+if (!isset($_SESSION['login'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
 include("../koneksi.php");
 ?>
-
 
 <?php
 // create 
@@ -11,15 +18,17 @@ if (isset($_POST['submit'])) {
     $keterangan = $_POST['keterangan'];
     $sql = "INSERT INTO prodi(nama_prodi,jenjang,keterangan) VALUES ('$nama_prodi','$jenjang','$keterangan')";
 
-    $query = $koneksi->query($sql);
-    header("Location: index.php");
-    exit();
+    if ($koneksi->query($sql)) {
+        header("Location: index.php");
+        exit();
+    } else {
+        echo "Gagal menambah data prodi: " . $koneksi->error;
+    }
 }
 ?>
 
 <?php
 // edit
-
 if (isset($_POST['update'])) {
     // Ambil data dari POST, bukan GET
     $id = intval($_POST['id']);
@@ -33,25 +42,26 @@ if (isset($_POST['update'])) {
                 keterangan='$keterangan' 
             WHERE id=$id";
 
-    $query = $koneksi->query($sql);
-
-    if ($query) {
+    if ($koneksi->query($sql)) {
         header("Location: index.php");
         exit();
     } else {
-        echo "Maaf, data gagal diubah: " . $koneksi->error;
+        echo "Maaf, data prodi gagal diubah: " . $koneksi->error;
     }
 }
 ?>
 
 <?php
-$sql = "DELETE FROM prodi where id=$_GET[id]";
-$hapus = $koneksi->query($sql);
-if ($hapus) {
-    header("Location: index.php");
-    exit();
-} else {
-    echo "Gagal menghapus data";
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+
+    $sql = "DELETE FROM prodi WHERE id=$id";
+    if ($koneksi->query($sql)) {
+        header("Location: index.php");
+        exit();
+    } else {
+        echo "Gagal menghapus data prodi: " . $koneksi->error;
+    }
 }
 ?>
 

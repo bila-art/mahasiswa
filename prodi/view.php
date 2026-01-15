@@ -1,8 +1,24 @@
 <?php
+session_start();
+
+// 1. Proteksi: Hanya user login yang bisa melihat detail prodi
+if (!isset($_SESSION['login'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
 require('../koneksi.php');
+
+$id = mysqli_real_escape_string($koneksi, $_GET['id']);
 $sql = "SELECT * FROM prodi where id=$_GET[id]";
 $result = $koneksi->query($sql);
-$edit = $result->fetch_assoc();
+$data = $result->fetch_assoc();
+
+if (!$data) {
+    echo "<script>alert('Data Prodi tidak ditemukan!'); window.location='index.php';</script>";
+    exit;
+}
+$base = '..'; // Path untuk navbar
 ?>
 
 <!DOCTYPE html>
@@ -11,58 +27,55 @@ $edit = $result->fetch_assoc();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Prodi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Detail Prodi - <?= htmlspecialchars($data['nama_prodi']); ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
-<body>
-    <div class="container mt-3">
-        <h1>View Prodi</h1>
-        <form method="post" action="gbproses.php">
-            <input type="hidden" name="id" value="<?= $edit['id']; ?>">
-            <div class="mb-3">
-                <label for="nama_prodi" class="form-label">Nama Prodi</label>
-                <input type="text" name="nama_prodi" value="<?= $edit['nama_prodi']; ?>" class="form-control" id="nama_prodi" disabled>
-            </div>
-            <div class="mb-3">
-                <label for="jenjang" class="form-label fw-semibold">
-                    Jenjang Pendidikan
-                </label>
+<body class="bg-light">
 
-                <select name="jenjang" id="jenjang" class="form-select" disabled>
-                    <option value="">-- Pilih Jenjang --</option>
+    <?php include '../partials/navbar.php'; ?>
 
-                    <option value="D2" <?= ($edit['jenjang'] == 'D2') ? 'selected' : '' ?>>
-                        Diploma 2 (D2)
-                    </option>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-success text-white py-3">
+                        <h4 class="mb-0 text-center"><i class="bi bi-info-circle me-2"></i>Detail Program Studi</h4>
+                    </div>
+                    <div class="card-body p-4">
 
-                    <option value="D3" <?= ($edit['jenjang'] == 'D3') ? 'selected' : '' ?>>
-                        Diploma 3 (D3)
-                    </option>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Nama Program Studi</label>
+                            <p class="fs-5 border-bottom pb-2"><?= htmlspecialchars($data['nama_prodi']); ?></p>
+                        </div>
 
-                    <option value="D4" <?= ($edit['jenjang'] == 'D4') ? 'selected' : '' ?>>
-                        Diploma 4 (D4)
-                    </option>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Jenjang Pendidikan</label>
+                            <p class="fs-5 border-bottom pb-2">
+                                <span class="badge bg-primary"><?= $data['jenjang']; ?></span>
+                            </p>
+                        </div>
 
-                    <option value="S2" <?= ($edit['jenjang'] == 'S2') ? 'selected' : '' ?>>
-                        Magister (S2)
-                    </option>
-                </select>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Keterangan / Deskripsi</label>
+                            <p class="fs-6 bg-light p-3 rounded border">
+                                <?= !empty($data['keterangan']) ? nl2br(htmlspecialchars($data['keterangan'])) : '<em class="text-muted">Tidak ada keterangan.</em>'; ?>
+                            </p>
+                        </div>
 
-                <div class="form-text">
-                    Pilih jenjang sesuai program studi
+                        <div class="d-grid mt-4">
+                            <a href="index.php" class="btn btn-secondary shadow-sm">
+                                <i class="bi bi-arrow-left me-2"></i>Kembali ke Daftar Prodi
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="mb-3">
-                <label for="keterangan" class="form-label">Keterangan</label>
-                <textarea class="form-control" disabled name="keterangan" id="keterangan"><?= $edit['keterangan']; ?></textarea>
-            </div>
-
-            <a href="index.php" class="btn btn-primary">Kembali</a>
-        </form>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

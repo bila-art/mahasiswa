@@ -1,8 +1,12 @@
 <?php
+session_start();
+// Proteksi: Hanya user login yang bisa menjalankan proses ini
+if (!isset($_SESSION['login'])) {
+    header("Location: ../login.php");
+    exit;
+}
 include("../koneksi.php");
 ?>
-
-
 <?php
 // create 
 if (isset($_POST['submit'])) {
@@ -13,15 +17,17 @@ if (isset($_POST['submit'])) {
     $prodi_id = $_POST['prodi_id'];
     $sql = "INSERT INTO mahasiswa(nim,nama_mhs,tgl_lahir,alamat, prodi_id) VALUES ('$nim','$nama_mhs','$tgl_lahir','$alamat','$prodi_id')";
 
-    $query = $koneksi->query($sql);
-    header("Location: index.php");
-    exit();
+    if ($koneksi->query($sql)) {
+        header("Location: index.php");
+        exit();
+    } else {
+        echo "Gagal menambah data: " . $koneksi->error;
+    }
 }
 ?>
 
 <?php
 // edit
-
 if (isset($_POST['update'])) {
     // Ambil data dari POST, bukan GET
     $nim = intval($_POST['nim']);
@@ -37,9 +43,7 @@ if (isset($_POST['update'])) {
                 prodi_id='$prodi_id'
             WHERE nim=$nim";
 
-    $query = $koneksi->query($sql);
-
-    if ($query) {
+    if ($koneksi->query($sql)) {
         header("Location: index.php");
         exit();
     } else {
@@ -49,13 +53,18 @@ if (isset($_POST['update'])) {
 ?>
 
 <?php
-$sql = "DELETE FROM mahasiswa where nim=$_GET[nim]";
-$hapus = $koneksi->query($sql);
-if ($hapus) {
-    header("Location: index.php");
-    exit();
-} else {
-    echo "Gagal menghapus data";
+// --- PROSES DELETE ---
+// Pastikan proses delete hanya jalan jika ada parameter 'hapus_nim' di URL
+if (isset($_GET['nim'])) {
+    $nim = mysqli_real_escape_string($koneksi, $_GET['nim']);
+
+    $sql = "DELETE FROM mahasiswa WHERE nim='$nim'";
+    if ($koneksi->query($sql)) {
+        header("Location: index.php");
+        exit();
+    } else {
+        echo "Gagal menghapus data: " . $koneksi->error;
+    }
 }
 ?>
 
